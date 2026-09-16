@@ -1,0 +1,108 @@
+# =====================================================================
+# CONFIGURACIÓN GENERAL DEL BOT DE TRADING MODULAR
+# =====================================================================
+
+broker:
+  # Opciones de conector: "metatrader5" o "simulador"
+  conector: "metatrader5"
+  servidor: "TuBroker-Demo"
+  cuenta: 0                         # Número de cuenta (ej. 12345678)
+  password: "TU_PASSWORD_AQUI"      # Contraseña de la cuenta MT5
+  path_terminal: ""                 # Ruta a terminal64.exe (opcional)
+  
+  # Modo simulación:
+  # - true: Dry Run (Calcula señales, simula entradas, SL y TP pero NO abre órdenes en MT5)
+  # - false: Abre órdenes reales/demo directamente en MetaTrader 5
+  modo_simulacion: false
+
+trading:
+  # Activos a vigilar (ejemplos: EURUSD, GBPUSD, XAUUSD, USDJPY)
+  simbolos:
+    - "EURUSD"
+    - "XAUUSD"
+  
+  # Temporalidad de las velas: M1, M5, M15, M30, H1, H4, D1
+  temporalidad: "M15"
+  
+  # Estrategia activa a utilizar:
+  # Opciones: "ema_cross", "rsi_bollinger", "supertrend"
+  estrategia_activa: "rsi_bollinger"
+  
+  # Número de velas históricas a cargar para el cálculo de indicadores
+  velas_historicas: 500
+  
+  # Intervalo de escaneo en segundos (en modo continuo)
+  intervalo_escaneo_segundos: 10
+  
+  # Filtros de seguridad
+  max_operaciones_por_simbolo: 1
+  max_spread_pips: 2.5
+
+gestion_riesgo:
+  # Tipo de cálculo de lote: "fijo" o "porcentaje_balance"
+  tipo_lotaje: "fijo"
+  lote_fijo: 0.01
+  riesgo_porcentaje_balance: 1.0  # Arriesgar 1% del balance por operación
+  
+  # Tipo de Stop Loss:
+  # - "atr": Adaptativo a la volatilidad de mercado (Recomendado)
+  # - "pips": Distancia fija en pips
+  tipo_stop_loss: "atr"
+  atr_periodo: 14
+  atr_multiplicador_sl: 1.5
+  sl_pips_fijos: 30.0
+
+  # Take Profit configurado como múltiplo del Stop Loss (Ratio Riesgo:Beneficio)
+  # Ejemplo: 2.0 significa que si el SL es de 15 pips, el TP será de 30 pips (1:2)
+  ratio_riesgo_beneficio: 2.0
+  
+  # Protección de ganancias
+  activar_breakeven: true
+  breakeven_trigger_r: 1.0     # Mover SL a precio de entrada cuando la ganancia sea de 1x el riesgo
+  
+  activar_trailing_stop: false
+  trailing_stop_distancia_atr: 1.0
+
+# Parámetros específicos de cada estrategia
+estrategias:
+  ema_cross:
+    ema_rapida: 9
+    ema_media: 21
+    ema_lenta: 200            # Filtro de tendencia principal
+
+  rsi_bollinger:
+    rsi_periodo: 14
+    rsi_sobrecompra: 70.0
+    rsi_sobreventa: 30.0
+    bollinger_periodo: 20
+    bollinger_desviacion: 2.0
+
+  supertrend:
+    periodo_atr: 10
+    multiplicador: 3.0
+
+# Alertas y Notificaciones por Telegram
+telegram:
+  activo: true                      # Activado para enviar alertas al móvil
+  token_bot: "TU_TOKEN_BOT_TELEGRAM_AQUI" # Token provisto por @BotFather
+  chat_id: "TU_CHAT_ID_TELEGRAM_AQUI"    # Chat ID provisto por @userinfobot
+  modo_ejecucion: "confirmacion"    # "confirmacion" (espera que presiones el botón) o "automatico"
+  enviar_captura_pantalla: true     # Adjuntar foto del gráfico TradingView con la señal
+  expiracion_senal_segundos: 600    # Tiempo máximo (10 min) para presionar el botón antes de caducar
+  notificar_senales: true          # Alertas cuando una estrategia detecta oportunidad
+  notificar_ejecuciones: true      # Alertas cuando se abre una orden (Simulación o Real)
+  notificar_cierres: true          # Alertas cuando se toca TP o SL
+
+# Interfaz Gráfica (TradingView Lightweight Charts)
+ui:
+  activa: true                     # Iniciar ventana con gráfico interactivo estilo TradingView
+  ancho: 1280
+  alto: 820
+  subgrafico_rsi_altura: 0.20      # Proporción del panel inferior para el RSI (20%)
+  
+  # Subgráfico de Oscilador Estocástico
+  mostrar_estocastico: true        # Mostrar subgráfico adicional con %K y %D
+  subgrafico_estocastico_altura: 0.20 # Altura del panel inferior para el Estocástico (20%)
+  estocastico_k: 14                # Período %K
+  estocastico_d: 3                 # Período %D
+  estocastico_suavizado: 3         # Suavizado %K
